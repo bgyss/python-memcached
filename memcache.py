@@ -1142,7 +1142,7 @@ class _Host(object):
         if hasattr(s, 'settimeout'): s.settimeout(self.socket_timeout)
         try:
             s.connect(self.address)
-        except socket.timeout, msg:
+        except socket.timeout as msg:
             self.mark_dead("connect: %s" % msg)
             return None
         except socket.error as msg:
