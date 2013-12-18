@@ -1339,7 +1339,7 @@ if __name__ == "__main__":
         sys.stdout.flush()
         try:
             x = mc.set("this has spaces", 1)
-        except Client.MemcachedKeyCharacterError, msg:
+        except Client.MemcachedKeyCharacterError as msg:
             print("OK")
         else:
             print("FAIL")
@@ -1348,7 +1348,7 @@ if __name__ == "__main__":
         print("Testing sending control characters..."),
         try:
             x = mc.set("this\x10has\x11control characters\x02", 1)
-        except Client.MemcachedKeyCharacterError, msg:
+        except Client.MemcachedKeyCharacterError as msg:
             print("OK")
         else:
             print("FAIL")
@@ -1357,14 +1357,14 @@ if __name__ == "__main__":
         print("Testing using insanely long key..."),
         try:
             x = mc.set('a'*SERVER_MAX_KEY_LENGTH, 1)
-        except Client.MemcachedKeyLengthError, msg:
+        except Client.MemcachedKeyLengthError as msg:
             print("FAIL")
             failures = failures + 1
         else:
             print("OK")
         try:
             x = mc.set('a'*SERVER_MAX_KEY_LENGTH + 'a', 1)
-        except Client.MemcachedKeyLengthError, msg:
+        except Client.MemcachedKeyLengthError as msg:
             print("OK")
         else:
             print("FAIL")
@@ -1373,7 +1373,7 @@ if __name__ == "__main__":
         print("Testing sending a unicode-string key..."),
         try:
             x = mc.set(unicode('keyhere'), 1)
-        except Client.MemcachedStringEncodingError, msg:
+        except Client.MemcachedStringEncodingError as msg:
             print("OK"),
         else:
             print("FAIL"),
