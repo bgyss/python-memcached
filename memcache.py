@@ -72,10 +72,7 @@ except ImportError:
     def decompress(val):
         raise _Error("received compressed data but I don't support compression (import error)")
 
-try:
-    from cStringIO import StringIO
-except ImportError:
-    from StringIO import StringIO
+from io import StringIO
 
 valid_key_chars_re = re.compile('[\x21-\x7e\x80-\xff]+$')
 
