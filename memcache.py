@@ -1028,7 +1028,7 @@ class Client(local):
                 if self.persistent_load:
                     unpickler.persistent_load = self.persistent_load
                 val = unpickler.load()
-            except Exception, e:
+            except Exception as e:
                 self.debuglog('Pickle error: %s\n' % e)
                 return None
         else:
