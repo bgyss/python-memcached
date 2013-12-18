@@ -1241,10 +1241,10 @@ def _doctest():
 
 if __name__ == "__main__":
     failures = 0
-    print "Testing docstrings..."
+    print("Testing docstrings...")
     _doctest()
-    print "Running tests:"
-    print
+    print("Running tests:")
+    print("")
     serverList = [["127.0.0.1:11211"]]
     if '--do-unix' in sys.argv:
         serverList.append([os.path.join(os.getcwd(), 'memcached.socket')])
@@ -1258,14 +1258,15 @@ if __name__ == "__main__":
             return "%s" % val
         def test_setget(key, val):
             global failures
-            print "Testing set/get {'%s': %s} ..." % (to_s(key), to_s(val)),
+            print("Testing set/get {'%s': %s} ..." % (to_s(key), to_s(val))),
             mc.set(key, val)
             newval = mc.get(key)
             if newval == val:
-                print "OK"
+                print("OK")
                 return 1
             else:
-                print "FAIL"; failures = failures + 1
+                print("FAIL")
+                failures = failures + 1
                 return 0
 
 
@@ -1282,18 +1283,20 @@ if __name__ == "__main__":
         test_setget("a_string", "some random string")
         test_setget("an_integer", 42)
         if test_setget("long", long(1<<30)):
-            print "Testing delete ...",
+            print("Testing delete ..."),
             if mc.delete("long"):
-                print "OK"
+                print("OK")
             else:
-                print "FAIL"; failures = failures + 1
-            print "Checking results of delete ..."
+                print("FAIL")
+                failures = failures + 1
+            print("Checking results of delete ...")
             if mc.get("long") == None:
-                print "OK"
+                print("OK")
             else:
-                print "FAIL"; failures = failures + 1
-        print "Testing get_multi ...",
-        print mc.get_multi(["a_string", "an_integer"])
+                print("FAIL")
+                failures = failures + 1
+        print("Testing get_multi ..."),
+        print(mc.get_multi(["a_string", "an_integer"]))
 
         #  removed from the protocol
         #if test_setget("timed_delete", 'foo'):
@@ -1308,112 +1311,125 @@ if __name__ == "__main__":
         #    else:
         #        print "FAIL"; failures = failures + 1
 
-        print "Testing get(unknown value) ...",
-        print to_s(mc.get("unknown_value"))
+        print("Testing get(unknown value) ..."),
+        print(to_s(mc.get("unknown_value")))
 
         f = FooStruct()
         test_setget("foostruct", f)
 
-        print "Testing incr ...",
+        print("Testing incr ..."),
         x = mc.incr("an_integer", 1)
         if x == 43:
-            print "OK"
+            print("OK")
         else:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
 
-        print "Testing decr ...",
+        print("Testing decr ..."),
         x = mc.decr("an_integer", 1)
         if x == 42:
-            print "OK"
+            print("OK")
         else:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
         sys.stdout.flush()
 
         # sanity tests
-        print "Testing sending spaces...",
+        print("Testing sending spaces..."),
         sys.stdout.flush()
         try:
             x = mc.set("this has spaces", 1)
         except Client.MemcachedKeyCharacterError, msg:
-            print "OK"
+            print("OK")
         else:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
 
-        print "Testing sending control characters...",
+        print("Testing sending control characters..."),
         try:
             x = mc.set("this\x10has\x11control characters\x02", 1)
         except Client.MemcachedKeyCharacterError, msg:
-            print "OK"
+            print("OK")
         else:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
 
-        print "Testing using insanely long key...",
+        print("Testing using insanely long key..."),
         try:
             x = mc.set('a'*SERVER_MAX_KEY_LENGTH, 1)
         except Client.MemcachedKeyLengthError, msg:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
         else:
-            print "OK"
+            print("OK")
         try:
             x = mc.set('a'*SERVER_MAX_KEY_LENGTH + 'a', 1)
         except Client.MemcachedKeyLengthError, msg:
-            print "OK"
+            print("OK")
         else:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
 
-        print "Testing sending a unicode-string key...",
+        print("Testing sending a unicode-string key..."),
         try:
             x = mc.set(unicode('keyhere'), 1)
         except Client.MemcachedStringEncodingError, msg:
-            print "OK",
+            print("OK"),
         else:
-            print "FAIL",; failures = failures + 1
+            print("FAIL"),
+            failures = failures + 1
         try:
             x = mc.set((unicode('a')*SERVER_MAX_KEY_LENGTH).encode('utf-8'), 1)
         except:
-            print "FAIL",; failures = failures + 1
+            print("FAIL"),
+            failures = failures + 1
         else:
-            print "OK",
+            print("OK"),
         import pickle
         s = pickle.loads('V\\u4f1a\np0\n.')
         try:
             x = mc.set((s*SERVER_MAX_KEY_LENGTH).encode('utf-8'), 1)
         except Client.MemcachedKeyLengthError:
-            print "OK"
+            print("OK")
         else:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
 
-        print "Testing using a value larger than the memcached value limit..."
-        print 'NOTE: "MemCached: while expecting[...]" is normal...'
+        print("Testing using a value larger than the memcached value limit...")
+        print('NOTE: "MemCached: while expecting[...]" is normal...')
         x = mc.set('keyhere', 'a'*SERVER_MAX_VALUE_LENGTH)
         if mc.get('keyhere') == None:
-            print "OK",
+            print("OK"),
         else:
-            print "FAIL",; failures = failures + 1
+            print("FAIL"),
+            failures = failures + 1
         x = mc.set('keyhere', 'a'*SERVER_MAX_VALUE_LENGTH + 'aaa')
         if mc.get('keyhere') == None:
-            print "OK"
+            print("OK")
         else:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
 
-        print "Testing set_multi() with no memcacheds running",
+        print("Testing set_multi() with no memcacheds running"),
         mc.disconnect_all()
         errors = mc.set_multi({'keyhere' : 'a', 'keythere' : 'b'})
         if errors != []:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
         else:
-            print "OK"
+            print("OK")
 
-        print "Testing delete_multi() with no memcacheds running",
+        print("Testing delete_multi() with no memcacheds running"),
         mc.disconnect_all()
         ret = mc.delete_multi({'keyhere' : 'a', 'keythere' : 'b'})
         if ret != 1:
-            print "FAIL"; failures = failures + 1
+            print("FAIL")
+            failures = failures + 1
         else:
-            print "OK"
+            print("OK")
 
     if failures > 0:
-        print '*** THERE WERE FAILED TESTS'
+        print('*** THERE WERE FAILED TESTS')
         sys.exit(1)
     sys.exit(0)
 
